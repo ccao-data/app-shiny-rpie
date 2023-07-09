@@ -16,13 +16,13 @@ library(stringr)
 
 
 # Getting MSSQL credentials from the shinyproxy server
-noctua_options(clear_cache = T)
+noctua_options(clear_cache = TRUE)
 noctua_options(cache_size = 10)
 
 AWS_ATHENA_CONN_NOCTUA <- dbConnect(
   noctua::athena(),
-  aws_access_key_id = Sys.getenv('AWS_ACCESS_KEY_ID'),
-  aws_secret_access_key = Sys.getenv('AWS_SECRET_ACCESS_KEY')
+  aws_access_key_id = Sys.getenv("AWS_ACCESS_KEY_ID"),
+  aws_secret_access_key = Sys.getenv("AWS_SECRET_ACCESS_KEY")
 )
 
 # gather necessary functions and data
@@ -43,12 +43,12 @@ ui <- fluidPage(
       hr(),
       textInput(
         "PIN",
-        label =  "Enter a 10 or 14-digit IC PIN:",
+        label = "Enter a 10 or 14-digit IC PIN:",
         placeholder = "15-01-203-008-0000"
       ),
       numericInput(
         "YEAR",
-        label =  "Enter Filing Year:",
+        label = "Enter Filing Year:",
         value = 2023
       ),
       hr(),
@@ -59,10 +59,11 @@ ui <- fluidPage(
              <span>&#8226;</span>
               PIN column does <i>not</i> need to be clean <br/>
              <span>&#8226;</span> PINs can be 10 or 14 digits <br/>
-             <span>&#8226;</span> One PIN per row <br/> <br/>")),
+             <span>&#8226;</span> One PIN per row <br/> <br/>")
+      ),
       fileInput(
         "FILE",
-        label =  "Upload a List of PINs:",
+        label = "Upload a List of PINs:",
         accept = c(".csv", ".xlsx"),
         placeholder = ".csv or .xlsx"
       )
@@ -85,7 +86,6 @@ ui <- fluidPage(
 
 # Define the server function to handle backend behavior
 server <- function(input, output) {
-
   # Main panel output, essentially just a formatted message
   output$pin_output <- eventReactive(
     {
@@ -113,8 +113,8 @@ server <- function(input, output) {
       need(
         "PIN" %in% names(
           switch(tools::file_ext(input$FILE$name),
-                 xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
-                 csv = read.csv(input$FILE$datapath)
+            xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
+            csv = read.csv(input$FILE$datapath)
           )
         ),
         "No 'PIN' column found in uploaded file"
@@ -122,8 +122,8 @@ server <- function(input, output) {
     )
 
     switch(tools::file_ext(input$FILE$name),
-           xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
-           csv = read.csv(input$FILE$datapath)
+      xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
+      csv = read.csv(input$FILE$datapath)
     )
   })
 
@@ -155,7 +155,7 @@ server <- function(input, output) {
               list(
                 extend = "copy",
                 title = ""
-                )
+              )
             )
           )
         ),

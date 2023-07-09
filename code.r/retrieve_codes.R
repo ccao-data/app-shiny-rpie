@@ -1,10 +1,8 @@
 pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
-
   PIN <- format_pin(PIN)
 
   # Check that PIN is correct length
   if (nchar(PIN) == 14) {
-
     output <- dbGetQuery(
       AWS_ATHENA_CONN_NOCTUA,
       glue("
@@ -15,145 +13,140 @@ pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
 
     # Check that PIN returns any information
     if (nrow(output > 0)) {
-
       return(output)
-
     } else {
-
       return("bad pin")
-
     }
-
   } else {
-
     return("no pin")
-
   }
-
 }
 
 message <- function(y, year) {
-
-  # formats the main output message for the end-user providing the RPIE code and address for a given PIN
+  # Formats the main output message for the end-user providing
+  # the RPIE code and address for a given PIN
 
   if (!is.data.frame(y)) {
-
     if (y == "bad pin") {
-
       # If PIN field isn't empty and PIN can't be found
-      return(paste0(tags$h3(paste0("Sorry, we don't have an RPIE record for this PIN ", emoji('pensive')))))
-
-    }  else if (y == "no pin") {
-
+      msg <- paste0(tags$h3(paste0(
+        "Sorry, we don't have an RPIE record for this PIN ",
+        emoji("pensive")
+      )))
+      return(msg)
+    } else if (y == "no pin") {
       # Output nothing if PIN field is empty
-      return(paste0(tags$h3(paste0("Please enter a valid PIN ", emoji('sweat_smile')))))
-
+      msg <- paste0(tags$h3(paste0(
+        "Please enter a valid PIN ",
+        emoji("sweat_smile")
+      )))
+      return(msg)
     }
-
   } else {
-
-    # create HTML formatted elements of output message
-    PIN <- tags$span(style = "color:coral; font-family:consolas; font-weight:bold", pin_format_pretty(y$pin, full_length = TRUE))
-    RPIE_CODE <- tags$span(style = "color:#337ABD; font-family:consolas; font-weight:bold", y$rpie_code)
-    address <- tags$p(style = "margin-left: 40px; font-style: italic", HTML(paste(y %>% select(starts_with('mail')), collapse = "<br>")))
+    # Create HTML formatted elements of output message
+    PIN <- tags$span(
+      style = "color:coral; font-family:consolas; font-weight:bold",
+      pin_format_pretty(y$pin, full_length = TRUE)
+    )
+    RPIE_CODE <- tags$span(
+      style = "color:#337ABD; font-family:consolas; font-weight:bold",
+      y$rpie_code
+    )
+    address <- tags$p(
+      style = "margin-left: 40px; font-style: italic",
+      HTML(paste(y %>% select(starts_with("mail")), collapse = "<br>"))
+    )
 
     if (substr(y$class, 1, 1) != 2) {
-
-      return(paste0("<br><br><br><h3>The ",
-                    year,
-                    " RPIE code for PIN ",
-                    PIN,
-                    " is ",
-                    RPIE_CODE,
-                    "<br></h3><i>
-                    Please note the difference between <span style='font-family:consolas'>0</span> (zero)
-                    and <span style='font-family:consolas'>O</span> (letter O) when communicating with taxpayers.
-                    </i><h3><hr>
-                    It was mailed to:
-                    <br><br>",
-                    address,
-                    "</h3>"))
-
+      return(paste0(
+        "<br><br><br><h3>The ",
+        year,
+        " RPIE code for PIN ",
+        PIN,
+        " is ",
+        RPIE_CODE,
+        "<br></h3><i>
+          Please note the difference between
+          <span style='font-family:consolas'>0</span> (zero)
+           and <span style='font-family:consolas'>O</span> (letter O)
+           when communicating with taxpayers.
+          </i><h3><hr>
+          It was mailed to:
+          <br><br>",
+        address,
+        "</h3>"
+      ))
     } else {
-
-      # let the user know if a taxpayer has requested a code for a residential property (which won't need to file an RPIE)
-      return(paste0("<h3>The ",
-                    year,
-                    " RPIE code for PIN ",
-                    PIN,
-                    " is ",
-                    RPIE_CODE,
-                    "</h3><hr><h4>This is a class ",
-                    y$class,
-                    " (",
-                    tolower(ccao::class_dict %>%
-                              dplyr::filter(class_code == y$class) %>%
-                              dplyr::pull(class_desc)),
-                    ") residential parcel ",
-                    "and did not receive a mailer.</h4>"))
-
+      # Let the user know if a taxpayer has requested a code for a
+      # residential property (which won't need to file an RPIE)
+      return(paste0(
+        "<h3>The ",
+        year,
+        " RPIE code for PIN ",
+        PIN,
+        " is ",
+        RPIE_CODE,
+        "</h3><hr><h4>This is a class ",
+        y$class,
+        " (",
+        tolower(ccao::class_dict %>%
+          dplyr::filter(class_code == y$class) %>%
+          dplyr::pull(class_desc)),
+        ") residential parcel ",
+        "and did not receive a mailer.</h4>"
+      ))
     }
-
   }
-
 }
 
 format_pin <- function(PIN) {
-
   # format the input PIN
   PIN <- gsub("\\D+", "", PIN)
 
   # make sure PINs are 14 digits
   if (nchar(PIN) == 10) {
-
     PIN <- str_pad(PIN, width = 14, side = "right", pad = "0")
 
     return(PIN)
-
   } else {
-
     return(PIN)
-
   }
-
-
 }
 
 clean_list <- function(data, year) {
-
-  # Cleans the PIN column in data that users upload so that it can be joined to RPIE codes
+  # Cleans the PIN column in data that users upload so that
+  # it can be joined to RPIE codes
 
   data <- data %>%
     # Remove non-numeric characters from list of PINs
     dplyr::mutate(PIN = gsub("\\D+", "", PIN)) %>%
-    na_if('') %>%
+    na_if("") %>%
     # Make sure PINs are 14 digits
     dplyr::mutate(PIN = str_pad(PIN, width = 14, side = "right", pad = "0"))
 
   # Structure PINs for SQL pull
   pins <- paste0("'", paste(data$PIN, collapse = "', '"), "'")
 
-  output <- data %>% left_join(
+  output <- data %>%
+    left_join(
 
-    # Gather RPIE codes
-    dbGetQuery(AWS_ATHENA_CONN_NOCTUA, glue('
+      # Gather RPIE codes
+      dbGetQuery(AWS_ATHENA_CONN_NOCTUA, glue('
       SELECT pin AS PIN, rpie_code AS "RPIE Code"
       FROM rpie.pin_codes
       WHERE year = CAST({year} AS varchar)
       AND pin IN ({pins})
       '))
-  )  %>%
-
+    ) %>%
     # Format PIN for output
     mutate(PIN = ccao::pin_format_pretty(PIN, full_length = TRUE)) %>%
-    relocate(c('PIN', 'RPIE Code')) %>%
-    discard(~all(is.na(.) | . == ""))
+    relocate(c("PIN", "RPIE Code")) %>%
+    discard(~ all(is.na(.) | . == ""))
 
   # If no PINs have RPIE codes, RPIE Code column will need to be added back
   if (ncol(output) < 2) output[, 2] <- NA
 
-  names(output)[1:2] <- c("PIN", paste0(year, ' RPIE Code'))
+  names(output)[1:2] <- c("PIN", paste0(year, " RPIE Code"))
 
   return(output)
-
 }
