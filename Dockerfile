@@ -20,7 +20,7 @@
 ### SETUP ###
 
 # Use the shiny image as a base
-FROM rocker/r-ver:4.3.1
+FROM rocker/r-ver:4.2.2
 
 # Arguments that get passed to apt to install linux dependencies. Formatted as
 # strings with libraries separated by a space. If an app is missing linux
@@ -112,7 +112,7 @@ ARG VCS_NAMESPACE
 
 # Environmental variables that are passed to the container. These variables
 # exist inside each app and can be called from R. They are used to create a
-# version number in the application UI as well as link to GitHub  
+# version number in the application UI as well as link to GitHub
 ENV VCS_NAME=$VCS_NAME
 ENV VCS_URL=$VCS_URL
 ENV VCS_REF=$VCS_REF
