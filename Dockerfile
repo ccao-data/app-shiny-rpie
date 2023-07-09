@@ -52,11 +52,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     && apt-get clean && apt-get autoremove --purge -y \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
-# Install ODBC drivers for MS SQL. These are used to establish a connection
-# to CCAO's existing SQL server
-RUN wget --no-verbose https://packages.microsoft.com/debian/9/prod/pool/main/m/msodbcsql17/msodbcsql17_17.4.2.1-1_amd64.deb -O /tmp/msodbc.deb \
-    && ACCEPT_EULA=Y apt-get install /tmp/msodbc.deb
-
 
 ### R PACKAGE INSTALL ###
 
