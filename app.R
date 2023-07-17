@@ -113,7 +113,7 @@ server <- function(input, output) {
       need(
         "PIN" %in% names(
           switch(tools::file_ext(input$FILE$name),
-            xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
+            xlsx = read.xlsx(input$FILE$datapath, sheet = 1, sep.names = " "),
             csv = read.csv(input$FILE$datapath)
           )
         ),
@@ -122,7 +122,7 @@ server <- function(input, output) {
     )
 
     switch(tools::file_ext(input$FILE$name),
-      xlsx = read.xlsx(input$FILE$datapath, sheet = 1),
+      xlsx = read.xlsx(input$FILE$datapath, sheet = 1, sep.names = " "),
       csv = read.csv(input$FILE$datapath)
     )
   })

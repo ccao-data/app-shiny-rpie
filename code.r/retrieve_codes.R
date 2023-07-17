@@ -118,11 +118,13 @@ clean_list <- function(data, year) {
   # it can be joined to RPIE codes
 
   data <- data %>%
-    # Remove non-numeric characters from list of PINs
-    dplyr::mutate(PIN = gsub("\\D+", "", PIN)) %>%
-    na_if("") %>%
-    # Make sure PINs are 14 digits
-    dplyr::mutate(PIN = str_pad(PIN, width = 14, side = "right", pad = "0"))
+    mutate(
+      # Remove non-numeric characters from list of PINs
+      PIN = gsub("\\D+", "", PIN),
+      across(where(is.character), ~ na_if(.x, "")),
+      # Make sure PINs are 14 digits
+      PIN = str_pad(PIN, width = 14, side = "right", pad = "0")
+      )
 
   # Structure PINs for SQL pull
   pins <- paste0("'", paste(data$PIN, collapse = "', '"), "'")
