@@ -124,7 +124,7 @@ clean_list <- function(data, year) {
       across(where(is.character), ~ na_if(.x, "")),
       # Make sure PINs are 14 digits
       PIN = str_pad(PIN, width = 14, side = "right", pad = "0")
-      )
+    )
 
   # Structure PINs for SQL pull
   pins <- paste0("'", paste(data$PIN, collapse = "', '"), "'")
