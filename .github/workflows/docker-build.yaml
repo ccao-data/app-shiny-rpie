@@ -30,7 +30,7 @@ jobs:
       - uses: docker/build-push-action@v4
         with:
           context: .
-          push: true
+          push: github.event_name != 'pull_request'
           tags: ghcr.io/${{ github.repository }}:${{ env.IMAGE_TAG }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
