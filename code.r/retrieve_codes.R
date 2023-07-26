@@ -15,7 +15,19 @@ pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
     if (nrow(output > 0)) {
       return(output)
     } else {
-      return("bad pin")
+      new_pin <- dbGetQuery(
+        AWS_ATHENA_CONN_NOCTUA,
+        glue("
+        SELECT MAX(taxyr) FROM iasworld.pardat
+        WHERE parid = '{PIN}'
+        ")
+      )
+
+      if (new_pin == substr(Sys.Date(), 1, 4)) {
+        return("new pin")
+      } else {
+        return("bad pin")
+      }
     }
   } else {
     return("no pin")
@@ -33,6 +45,16 @@ message <- function(y, year) {
         "Sorry, we don't have an RPIE record for this PIN ",
         emoji("pensive")
       )))
+      return(msg)
+    } else if (y == "new pin") {
+      # Deliver pdf URL if PIN is new
+      msg <- sprintf(paste0(
+        "<h3>This is a new PIN for ",
+        year,
+        " and has not yet been assigned an RPIE code - you will need to submit an ", # nolint
+        "<a href='https://github.com/ccao-data/wiki/blob/master/RPIE/RPIE2023.pdf'>RPIE pdf form</a>", # nolint
+        " with your appeal rather than using the RPIE website.</h3>"
+      ))
       return(msg)
     } else if (y == "no pin") {
       # Output nothing if PIN field is empty
