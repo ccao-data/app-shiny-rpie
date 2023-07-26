@@ -51,8 +51,8 @@ message <- function(y, year) {
       msg <- sprintf(paste0(
         "<h3>This is a new PIN for ",
         year,
-        " and has not yet been assigned an RPIE code - you will need to submit an ",
-        "<a href='https://github.com/ccao-data/wiki/blob/master/RPIE/RPIE2023.pdf'>RPIE pdf form</a>",
+        " and has not yet been assigned an RPIE code - you will need to submit an ", # nolint
+        "<a href='https://github.com/ccao-data/wiki/blob/master/RPIE/RPIE2023.pdf'>RPIE pdf form</a>", # nolint
         " with your appeal rather than using the RPIE website.</h3>"
       ))
       return(msg)
