@@ -18,7 +18,7 @@ pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
       new_pin <- dbGetQuery(
         AWS_ATHENA_CONN_NOCTUA,
         glue("
-        SELECT MAX(taxyr) FROM iasworld.pardat
+        SELECT MIN(taxyr) FROM iasworld.pardat
         WHERE parid = '{PIN}'
         ")
       )
