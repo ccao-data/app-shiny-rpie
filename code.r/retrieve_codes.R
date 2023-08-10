@@ -12,18 +12,19 @@ pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
     )
 
     # Check that PIN returns any information
-    if (nrow(output > 0)) {
+    if (nrow(output) > 0) {
       return(output)
     } else {
-      new_pin <- dbGetQuery(
+      new_pin <- as.character(dbGetQuery(
         AWS_ATHENA_CONN_NOCTUA,
         glue("
         SELECT MIN(taxyr) FROM iasworld.pardat
         WHERE parid = '{PIN}'
         ")
-      )
-
-      if (new_pin == substr(Sys.Date(), 1, 4)) {
+      ))
+      if (is.na(new_pin)) {
+        return("bad pin")
+      } else if (new_pin == substr(Sys.Date(), 1, 4)) {
         return("new pin")
       } else {
         return("bad pin")
