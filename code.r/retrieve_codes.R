@@ -119,8 +119,8 @@ message <- function(y, year) {
         y$class,
         " (",
         tolower(ccao::class_dict %>%
-                  dplyr::filter(class_code == y$class) %>%
-                  dplyr::pull(class_desc)),
+          dplyr::filter(class_code == y$class) %>%
+          dplyr::pull(class_desc)),
         ") residential parcel ",
         "and did not receive a mailer.</h4>"
       ))
