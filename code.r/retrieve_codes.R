@@ -25,7 +25,9 @@ pinfo <- function(AWS_ATHENA_CONN_NOCTUA, PIN, YEAR) {
       if (is.na(new_pin)) {
         return("bad pin")
       } else if (new_pin == substr(Sys.Date(), 1, 4)) {
-        return("new pin")
+        out <- "new pin"
+        names(out) <- PIN
+        return(out)
       } else {
         return("bad pin")
       }
@@ -50,7 +52,11 @@ message <- function(y, year) {
     } else if (y == "new pin") {
       # Deliver pdf URL if PIN is new
       msg <- sprintf(paste0(
-        "<h3>This is a new PIN for ",
+        "<h3>", tags$span(
+          style = "color:coral; font-family:consolas; font-weight:bold",
+          pin_format_pretty(names(y), full_length = TRUE)
+        ),
+        " is a new PIN for ",
         year,
         " and has not yet been assigned an RPIE code - you will need to submit an ", # nolint
         "<a href='https://github.com/ccao-data/wiki/blob/master/RPIE/RPIE2023.pdf'>RPIE pdf form</a>", # nolint
@@ -113,8 +119,8 @@ message <- function(y, year) {
         y$class,
         " (",
         tolower(ccao::class_dict %>%
-          dplyr::filter(class_code == y$class) %>%
-          dplyr::pull(class_desc)),
+                  dplyr::filter(class_code == y$class) %>%
+                  dplyr::pull(class_desc)),
         ") residential parcel ",
         "and did not receive a mailer.</h4>"
       ))
